@@ -9,6 +9,10 @@
     {
       "Name": "Video Fast Forward",
       "Tooltip": "Fast forward web video by 5 seconds"
+    },
+    {
+      "Name": "Play/Pause",
+      "Tooltip": "Play or pause web video"
     }
   ]
 }

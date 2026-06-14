@@ -174,6 +174,9 @@ const 接口实例 = new UlanzideckApi();
   } else if (动作名称 === "mediaFastForward") {
     写入调试日志("触发：视频快进");
     广播控制指令("fastForward");
+  } else if (动作名称 === "mediaPlayPause") {
+    写入调试日志("触发：视频播放暂停");
+    广播控制指令("playPause");
   } else {
     写入调试日志(`未知的动作名称: ${动作名称}`);
   }

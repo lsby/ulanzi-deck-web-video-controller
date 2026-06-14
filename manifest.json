@@ -39,6 +39,20 @@
       "Tooltip": "Fast forward video by 5 seconds",
       "UUID": "com.lsby.webVideoControl.mediaFastForward",
       "SupportedInMultiActions": false
+    },
+    {
+      "Name": "MediaPlayPause",
+      "Icon": "assets/icons/mediaPlayPause.png",
+      "state": 0,
+      "States": [
+        {
+          "Name": "normal",
+          "Image": "assets/icons/mediaPlayPause.png"
+        }
+      ],
+      "Tooltip": "Play or pause video",
+      "UUID": "com.lsby.webVideoControl.mediaPlayPause",
+      "SupportedInMultiActions": false
     }
   ],
   "OS": [
