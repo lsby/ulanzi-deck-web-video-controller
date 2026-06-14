@@ -1,0 +1,53 @@
+{
+  "Version": "1.0.0",
+  "Name": "Media Control",
+  "Description": "Control web video playback progress (fast-forward and rewind) without stealing focus",
+  "Icon": "assets/icons/icon.png",
+  "Category": "Media Control",
+  "CategoryIcon": "assets/icons/category.png",
+  "CodePath": "plugin/app.js",
+  "Type": "JavaScript",
+  "SupportedInMultiActions": false,
+  "PrivateAPI": true,
+  "UUID": "com.lsby.webVideoControl",
+  "Author": "Ulanzi",
+  "Actions": [
+    {
+      "Name": "MediaRewind",
+      "Icon": "assets/icons/mediaRewind.png",
+      "state": 0,
+      "States": [
+        {
+          "Name": "normal",
+          "Image": "assets/icons/mediaRewind.png"
+        }
+      ],
+      "Tooltip": "Rewind video by 5 seconds",
+      "UUID": "com.lsby.webVideoControl.mediaRewind",
+      "SupportedInMultiActions": false
+    },
+    {
+      "Name": "MediaFastForward",
+      "Icon": "assets/icons/mediaFastForward.png",
+      "state": 0,
+      "States": [
+        {
+          "Name": "normal",
+          "Image": "assets/icons/mediaFastForward.png"
+        }
+      ],
+      "Tooltip": "Fast forward video by 5 seconds",
+      "UUID": "com.lsby.webVideoControl.mediaFastForward",
+      "SupportedInMultiActions": false
+    }
+  ],
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "6.1"
+  }
+}

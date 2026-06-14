@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "debug:app": "node plugin/app.js",
+    "debug:test": "node plugin/test.js",
+
+    "simulator": "node plugin/app.js 127.0.0.1 39069 zh_CN"    
+  },
+  "type": "module",
+  "devDependencies": {
+    "ws": "^8.18.0"
+  }
+}

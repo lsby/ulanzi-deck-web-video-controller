@@ -1,0 +1,14 @@
+{
+  "Name": "Web Video Control",
+  "Description": "Seamlessly control playback progress (fast-forward and rewind) of active web videos",
+  "Actions": [
+    {
+      "Name": "Video Rewind",
+      "Tooltip": "Rewind web video by 5 seconds"
+    },
+    {
+      "Name": "Video Fast Forward",
+      "Tooltip": "Fast forward web video by 5 seconds"
+    }
+  ]
+}

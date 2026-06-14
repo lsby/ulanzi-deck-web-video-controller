@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Ulanzi Deck Video Controller",
+  "version": "1.0.0",
+  "description": "Receive commands from Ulanzi Deck plugin to fast-forward and rewind web videos via Native Messaging.",
+  "permissions": [
+    "nativeMessaging"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "icons": {
+    "16": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhcrWYd2sdVUTCySEgif8uln3zfftebuVijbz0gIc2nf/XHLPaVpa6sNtXZAyzrIxq88T0qe6IYdnU5pQBN3wklm0Ugn8Ig1SJKYy5QpC054Fkmk3wac4G+YoTTg8QjIikCAxGtXD3VkudO7MG/GS+l1VnTJHrwz91e6swH6KvyE2Trl8yAoENOsQFALm7sS9Q5gJV7okBXRMWm4leZX5V9W7PRzMM69H05Y51BwZn5xDREW42Ic/T4EXBSjMcIkXYCnK4Rf+18XaD5+CnRgIPuOnc5gdqkqe/eqSPM4hj1waU+m1VxdKmKDY5uy/pEWxeYone96aycVdEwOIJGqYJQIDAQAB"
+}
