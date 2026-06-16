@@ -1,12 +1,18 @@
 let 原生端口 = null;
 let 连接状态 = "disconnected";
 let 连接超时定时器 = null;
+let 错误详情 = "";
 
 // 更新连接状态并广播给 popup 页面
-function 更新连接状态(新状态) {
+function 更新连接状态(新状态, 错误原因 = "") {
   连接状态 = 新状态;
-  console.log(`[Background] 连接状态变更为: ${新状态}`);
-  chrome.runtime.sendMessage({ action: "statusUpdated", status: 新状态 }).catch(() => {
+  if (新状态 === "connect_failed" && 错误原因) {
+    错误详情 = 错误原因;
+  } else if (新状态 !== "connect_failed") {
+    错误详情 = "";
+  }
+  console.log(`[Background] 连接状态变更为: ${新状态}${错误详情 ? '，错误原因: ' + 错误详情 : ''}`);
+  chrome.runtime.sendMessage({ action: "statusUpdated", status: 新状态, error: 错误详情 }).catch(() => {
     // 忽略当 popup 未打开时的广播失败报错
   });
 }
@@ -38,7 +44,7 @@ function 连接原生宿主() {
           } catch (错误) {}
           原生端口 = null;
         }
-        更新连接状态("connect_failed");
+        更新连接状态("connect_failed", "连接超时，原生宿主未在 2 秒内响应。请检查后台程序是否启动，以及注册表配置是否正确。");
       }
     }, 2000);
 
@@ -68,7 +74,14 @@ function 连接原生宿主() {
     });
 
     原生端口.onDisconnect.addListener(() => {
-      console.warn("[Background] 原生宿主进程已断开连接。");
+      let 错误原因 = "";
+      if (chrome.runtime.lastError) {
+        错误原因 = chrome.runtime.lastError.message || JSON.stringify(chrome.runtime.lastError);
+        console.warn("[Background] 原生宿主连接断开/失败，详细原因:", 错误原因);
+      } else {
+        console.warn("[Background] 原生宿主进程已断开连接。");
+      }
+
       if (连接超时定时器) {
         clearTimeout(连接超时定时器);
       }
@@ -77,7 +90,7 @@ function 连接原生宿主() {
       原生端口 = null;
 
       if (之前状态 === "connecting") {
-        更新连接状态("connect_failed");
+        更新连接状态("connect_failed", 错误原因 || "原生宿主连接被断开");
       } else {
         更新连接状态("disconnected");
       }
@@ -88,18 +101,18 @@ function 连接原生宿主() {
       clearTimeout(连接超时定时器);
     }
     原生端口 = null;
-    更新连接状态("connect_failed");
+    更新连接状态("connect_failed", 捕获错误.message);
   }
 }
 
 // 监听来自 popup 的消息
 chrome.runtime.onMessage.addListener((请求, 发送者, 发送响应) => {
   if (请求.action === "getStatus") {
-    发送响应({ status: 连接状态 });
+    发送响应({ status: 连接状态, error: 错误详情 });
   } else if (请求.action === "connect") {
     连接原生宿主();
     // 立刻返回 "connecting" 状态，让 UI 进入“正在连接”等待状态
-    发送响应({ status: 连接状态 });
+    发送响应({ status: 连接状态, error: 错误详情 });
   } else if (请求.action === "disconnect") {
     if (连接超时定时器) {
       clearTimeout(连接超时定时器);
@@ -111,7 +124,7 @@ chrome.runtime.onMessage.addListener((请求, 发送者, 发送响应) => {
       原生端口 = null;
     }
     更新连接状态("disconnected");
-    发送响应({ status: 连接状态 });
+    发送响应({ status: 连接状态, error: 错误详情 });
   }
 });
 
