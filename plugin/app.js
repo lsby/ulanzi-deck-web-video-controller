@@ -1,5 +1,4 @@
-import { exec as 执行命令 } from "child_process";
-import crypto from "crypto";
+
 import fs from "fs";
 import net from "net";
 import path from "path";
@@ -60,49 +59,11 @@ function 广播控制指令(动作类型) {
   }
 }
 
+const 公钥Base64 = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhcrWYd2sdVUTCySEgif8uln3zfftebuVijbz0gIc2nf/XHLPaVpa6sNtXZAyzrIxq88T0qe6IYdnU5pQBN3wklm0Ugn8Ig1SJKYy5QpC054Fkmk3wac4G+YoTTg8QjIikCAxGtXD3VkudO7MG/GS+l1VnTJHrwz91e6swH6KvyE2Trl8yAoENOsQFALm7sS9Q5gJV7okBXRMWm4leZX5V9W7PRzMM69H05Y51BwZn5xDREW42Ic/T4EXBSjMcIkXYCnK4Rf+18XaD5+CnRgIPuOnc5gdqkqe/eqSPM4hj1waU+m1VxdKmKDY5uy/pEWxeYone96aycVdEwOIJGqYJQIDAQAB";
+const 扩展标识 = "fickakookgdjnejinipbbgohcbbaohef";
+
 // 初始化扩展的 key 与注册表
 function 初始化扩展与注册表() {
-  const 密钥文件路径 = path.join(插件根目录, "plugin", "extension-key.json");
-  let 公钥Base64 = "";
-  let 扩展标识 = "";
-
-  // 1. 读取或生成持久化的密钥对，保证每次启动扩展 ID 保持一致
-  if (fs.existsSync(密钥文件路径)) {
-    try {
-      const 密钥数据 = JSON.parse(fs.readFileSync(密钥文件路径, "utf8"));
-      公钥Base64 = 密钥数据.publicKey;
-      扩展标识 = 密钥数据.extensionId;
-      写入调试日志(`已加载已有的扩展密钥，扩展标识: ${扩展标识}`);
-    } catch (读取错误) {
-      写入调试日志(`加载密钥文件失败，将重新生成: ${读取错误.message}`);
-    }
-  }
-
-  if (!公钥Base64) {
-    写入调试日志("正在生成新的扩展密钥对...");
-    const { publicKey } = crypto.generateKeyPairSync("rsa", {
-      modulusLength: 2048,
-      publicKeyEncoding: { type: "spki", format: "der" },
-    });
-    公钥Base64 = publicKey.toString("base64");
-
-    // 计算扩展标识 (Extension ID)
-    const 哈希 = crypto.createHash("sha256").update(publicKey).digest("hex");
-    const 前32位 = 哈希.substring(0, 32);
-    for (let 索引 = 0; 索引 < 前32位.length; 索引++) {
-      const 数值 = parseInt(前32位[索引], 16);
-      扩展标识 += String.fromCharCode(97 + 数值);
-    }
-
-    fs.writeFileSync(
-      密钥文件路径,
-      JSON.stringify({ publicKey: 公钥Base64, extensionId: 扩展标识 }, null, 2),
-      "utf8",
-    );
-    写入调试日志(`新扩展密钥已生成并保存，扩展标识: ${扩展标识}`);
-  }
-
-  // 2. 写入/更新 chrome-plugin/manifest.json 中的 key
   const 扩展配置文件路径 = path.join(
     插件根目录,
     "chrome-plugin",
@@ -111,46 +72,15 @@ function 初始化扩展与注册表() {
   if (fs.existsSync(扩展配置文件路径)) {
     try {
       const 配置 = JSON.parse(fs.readFileSync(扩展配置文件路径, "utf8"));
-      配置.key = 公钥Base64;
-      fs.writeFileSync(扩展配置文件路径, JSON.stringify(配置, null, 2), "utf8");
-      写入调试日志("已更新 chrome-plugin/manifest.json 中的公钥 (key) 配置");
+      if (配置.key !== 公钥Base64) {
+        配置.key = 公钥Base64;
+        fs.writeFileSync(扩展配置文件路径, JSON.stringify(配置, null, 2), "utf8");
+        写入调试日志("已更新 chrome-plugin/manifest.json 中的公钥 (key) 配置");
+      }
     } catch (写入文件错误) {
       写入调试日志(`更新 manifest.json 失败: ${写入文件错误.message}`);
     }
   }
-
-  const 宿主配置文件路径 = path.join(
-    插件根目录,
-    "chrome-plugin",
-    "host-manifest.json",
-  );
-  const 宿主批处理路径 = path.join(插件根目录, "chrome-plugin", "host.bat");
-  const 宿主配置 = {
-    name: "com.lsby.web_video_control",
-    description: "Ulanzi Deck controller host",
-    path: 宿主批处理路径,
-    type: "stdio",
-    allowed_origins: [`chrome-extension://${扩展标识}/`],
-  };
-  fs.writeFileSync(宿主配置文件路径, JSON.stringify(宿主配置, null, 2), "utf8");
-  写入调试日志("已生成动态的 host-manifest.json 配置文件");
-
-  // 4. 调用 PowerShell 写入 Windows 注册表（仅限 HKCU，无需管理员权限）
-  const 宿主配置文件绝对路径 = path.join(
-    插件根目录,
-    "chrome-plugin",
-    "host-manifest.json",
-  );
-  const 注册表命令 = `powershell -Command "$Paths = @('HKCU:\\Software\\Microsoft\\Edge\\NativeMessagingHosts\\com.lsby.web_video_control', 'HKCU:\\Software\\Google\\Chrome\\NativeMessagingHosts\\com.lsby.web_video_control'); foreach ($p in $Paths) { if (-not (Test-Path $p)) { New-Item -Path $p -Force | Out-Null }; Set-ItemProperty -Path $p -Name '(Default)' -Value '${宿主配置文件绝对路径}' }"`;
-
-  写入调试日志("开始注册原生消息宿主到注册表...");
-  执行命令(注册表命令, (执行错误) => {
-    if (执行错误) {
-      写入调试日志(`【注册表写入失败】: ${执行错误.message}`);
-    } else {
-      写入调试日志("原生消息宿主已成功注册到 Edge 和 Chrome 注册表！");
-    }
-  });
 }
 
 // 自动执行配置初始化
