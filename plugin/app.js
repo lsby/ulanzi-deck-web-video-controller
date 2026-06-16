@@ -4,22 +4,17 @@ import net from "net";
 import path from "path";
 import UlanzideckApi from "../libs/node/ulanzideckApi.js";
 import Utils from "../libs/node/utils.js";
+import { 记录调试日志 } from "../libs/node/logger.js";
 
 const 应用标识 = "com.lsby.webVideoControl";
 const 插件根目录 = Utils.getPluginPath();
-const 日志文件路径 = path.join(插件根目录, "debug-log.txt");
+const 日志目录路径 = path.join(插件根目录, "logs");
 
 // 写入调试日志到文件
 function 写入调试日志(日志内容) {
-  // const 时间戳 = `[${new Date().toLocaleString("zh-CN", { hour12: false })}]`;
-  // const 格式化日志 = `${时间戳} ${日志内容}\n`;
-  // console.log(日志内容);
-  // try {
-  //   fs.appendFileSync(日志文件路径, 格式化日志, "utf8");
-  // } catch (写入错误) {
-  //   console.error("写入日志文件失败:", 写入错误);
-  // }
+  记录调试日志(日志目录路径, 日志内容);
 }
+
 
 // 存储所有已连接的浏览器原生宿主管道套接字
 const 管道连接集合 = new Set();
