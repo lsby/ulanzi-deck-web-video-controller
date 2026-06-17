@@ -24,6 +24,7 @@
       ],
       "Tooltip": "Rewind video by 5 seconds",
       "UUID": "com.lsby.webVideoControl.mediaRewind",
+      "PropertyInspectorPath": "ui/index.html",
       "SupportedInMultiActions": false
     },
     {
@@ -38,6 +39,7 @@
       ],
       "Tooltip": "Fast forward video by 5 seconds",
       "UUID": "com.lsby.webVideoControl.mediaFastForward",
+      "PropertyInspectorPath": "ui/index.html",
       "SupportedInMultiActions": false
     },
     {
@@ -52,6 +54,7 @@
       ],
       "Tooltip": "Play or pause video",
       "UUID": "com.lsby.webVideoControl.mediaPlayPause",
+      "PropertyInspectorPath": "ui/index.html",
       "SupportedInMultiActions": false
     }
   ],

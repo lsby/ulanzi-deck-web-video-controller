@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>网页视频控制插件使用指南</title>
+    <style>
+      :root {
+        --背景色: #0b0f19;
+        --卡片背景: rgba(20, 26, 45, 0.6);
+        --边框色: rgba(99, 102, 241, 0.15);
+        --文字主色: #f3f4f6;
+        --文字次色: #9ca3af;
+        --主题色-起: #6366f1;
+        --主题色-止: #06b6d4;
+        --绿色-亮: #10b981;
+        --橙色-亮: #f59e0b;
+        --字体:
+          "Outfit", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: var(--背景色);
+        background-image:
+          radial-gradient(
+            at 0% 0%,
+            rgba(99, 102, 241, 0.15) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 100% 100%,
+            rgba(6, 182, 212, 0.15) 0px,
+            transparent 50%
+          );
+        background-attachment: fixed;
+        color: var(--文字主色);
+        font-family: var(--字体);
+        line-height: 1.6;
+        padding: 40px 20px;
+      }
+
+      .文档-容器 {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .主题-渐变字 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #a5b4fc 0%, #22d3ee 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+      }
+
+      .副标题 {
+        color: var(--文字次色);
+        font-size: 1.1rem;
+      }
+
+      .卡片 {
+        background: var(--卡片背景);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--边框色);
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 10px;
+      }
+
+      h2 .图标-序号 {
+        background: linear-gradient(
+          135deg,
+          var(--主题色-起) 0%,
+          var(--主题色-止) 100%
+        );
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        font-weight: bold;
+      }
+
+      ul,
+      ol {
+        padding-left: 20px;
+        margin-bottom: 15px;
+      }
+
+      li {
+        margin-bottom: 10px;
+        color: var(--文字主色);
+      }
+
+      li strong {
+        color: #ffffff;
+      }
+
+      .提示-区域 {
+        background: rgba(245, 158, 11, 0.1);
+        border-left: 4px solid var(--橙色-亮);
+        border-radius: 4px;
+        padding: 15px;
+        margin-top: 15px;
+        font-size: 0.95rem;
+      }
+
+      .提示-标题 {
+        color: var(--橙色-亮);
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .代码-行 {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: monospace;
+        color: #22d3ee;
+        font-size: 0.9em;
+      }
+
+      .问答-条目 {
+        margin-bottom: 20px;
+      }
+
+      .问答-问题 {
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .问答-问题::before {
+        content: "Q";
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+
+      .问答-回答 {
+        color: var(--文字次色);
+        padding-left: 28px;
+      }
+
+      .问答-回答 li {
+        color: var(--文字次色);
+      }
+
+      .示意图-容器 {
+        margin-top: 10px;
+        margin-bottom: 15px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--边框色);
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .示意图 {
+        width: 100%;
+        max-width: 650px;
+        height: auto;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .示意图-标题 {
+        font-size: 11px;
+        color: var(--文字次色);
+        margin-top: 6px;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="文档-容器">
+      <header>
+        <div class="主题-渐变字">网页视频控制插件</div>
+        <div class="副标题">Web Video Control User Guide</div>
+      </header>
+
+      <!-- 动机与核心痛点 -->
+      <div class="卡片" style="border-left: 4px solid var(--主题色-起)">
+        <h2
+          style="
+            border: none;
+            padding-bottom: 0;
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+          "
+        >
+          💡 核心解决痛点 & 开发初衷
+        </h2>
+        <p style="color: var(--文字主色); font-size: 13px; margin-bottom: 10px">
+          在日常电脑使用中，我们经常会<b>“一边看视频/小说，一边在其他软件里写代码或做其他工作”</b>。
+        </p>
+        <p
+          style="
+            color: var(--文字次色);
+            font-size: 12.5px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+          "
+        >
+          <b>传统多媒体键痛点</b
+          >：键盘或系统自带的多媒体快捷键<b>只能控制上一曲、下一曲和播放/暂停，无法控制进度（快进快退）</b>。如果我们一时走神想要回退几秒重听，就必须中断手头工作，将窗口切换到浏览器，用鼠标拖动进度条，再切回工作窗口，非常打断专注状态。
+        </p>
+        <p style="color: var(--文字次色); font-size: 12.5px; line-height: 1.5">
+          <b>本插件特色</b
+          >：在<b>完全不切换当前窗口焦点、不中断手头工作</b>的前提下，您可以通过
+          Ulanzi Deck
+          实体设备（按键或旋钮）直接微调后台浏览器的网页视频播放进度（快进/快退/暂停），帮助您始终保持专注。
+        </p>
+      </div>
+
+      <!-- 步骤一 -->
+      <div class="卡片">
+        <h2>
+          <span class="图标-序号">1</span> 🚀 第一步：配置浏览器与安装脚本
+        </h2>
+        <p style="margin-bottom: 15px; color: var(--文字次色)">
+          由于本插件需要控制浏览器网页内的视频播放，因此必须配合一个轻量级浏览器扩展使用。
+        </p>
+        <ol>
+          <li>
+            <strong>运行注册表安装配置</strong>：
+            <p style="color: var(--文字次色); margin-top: 4px">
+              请先在 Ulanzi 属性配置面板中点击
+              <b>【安装配置】</b> 按钮（或手动进入插件目录下的
+              <span class="代码-行">scripts</span> 文件夹并以管理员身份运行
+              <span class="代码-行">install.cmd</span>）。此脚本会自动写入
+              Native Messaging 策略白名单，允许浏览器扩展安全连接本地服务。
+            </p>
+          </li>
+          <li>
+            <strong>打开浏览器扩展程序管理页面</strong>：
+            <ul>
+              <li>
+                Chrome 浏览器：访问
+                <span class="代码-行">chrome://extensions/</span>
+              </li>
+              <li>
+                Edge 浏览器：访问
+                <span class="代码-行">edge://extensions/</span>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>开启开发者模式</strong>：
+            <p style="color: var(--文字次色); margin-top: 4px">
+              在扩展程序管理页面中，找到并开启 <b>“开发者模式”</b> 开关。
+            </p>
+            <div class="示意图-容器">
+              <img class="示意图" src="images/dev_mode_toggle.png" alt="开启开发者模式">
+              <div class="示意图-标题">图：在管理页面中开启“开发者模式”</div>
+            </div>
+          </li>
+          <li>
+            <strong>加载已解压的扩展程序</strong>：
+            <p style="color: var(--文字次色); margin-top: 4px">
+              点击 <b>“加载已解压的扩展程序 (Load unpacked)”</b> 按钮，并在弹出的文件夹选择框中，选择插件根目录下的
+              <span class="代码-行">chrome-plugin</span> 文件夹即可。
+            </p>
+            <div class="示意图-容器">
+              <img class="示意图" src="images/load_unpacked.png" alt="加载已解压的扩展程序">
+              <div class="示意图-标题">图：点击“加载已解压的扩展程序”选择 chrome-plugin 文件夹</div>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- 步骤二 -->
+      <div class="卡片">
+        <h2><span class="图标-序号">2</span> 🔗 第二步：确认连接状态</h2>
+        <ol>
+          <li>
+            <strong>检查与调试连接</strong>：
+            <p style="color: var(--文字次色); margin-top: 4px">
+              点击浏览器右上角工具栏的扩展图标，在弹窗中查看连接状态：
+            </p>
+            <ul style="margin-top: 6px; margin-bottom: 6px; padding-left: 20px">
+              <li style="color: var(--文字次色)">
+                若显示为<b>“已连接”</b>，说明通信链路已成功建立。
+              </li>
+              <li style="color: var(--文字次色)">
+                若显示为<b>“未连接”</b>，可直接点击弹窗中的
+                <b>【点击连接 Ulanzi】</b> 按钮重新尝试连接。
+              </li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+      <!-- 步骤三 -->
+      <div class="卡片">
+        <h2><span class="图标-序号">3</span> 🎛️ 第三步：配置动作与开始使用</h2>
+        <ol>
+          <li>打开 <strong>Ulanzi Studio</strong> 客户端软件。</li>
+          <li>
+            在右侧的动作列表中，找到
+            <strong>网页控制 (Media Control)</strong> 类别。
+          </li>
+          <li>
+            将动作拖拽至您的实体 Deck 设备按键或旋钮上：
+            <ul>
+              <li><strong>视频快退</strong>：按下即可将视频进度后退 5 秒。</li>
+              <li><strong>视频快进</strong>：按下即可将视频进度前进 5 秒。</li>
+              <li>
+                <strong>播放/暂停</strong>：按下可自由切换视频的播放与暂停状态。
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>打开并手动播放视频</strong>：
+            <p style="color: var(--文字次色); margin-top: 4px">
+              在浏览器中打开任意支持 HTML5 播放器的视频网站（如
+              <b>Bilibili</b>、<b>YouTube</b> 等）。
+            </p>
+            <div
+              class="提示-区域"
+              style="
+                margin-top: 8px;
+                background: rgba(99, 102, 241, 0.1);
+                border-left-color: var(--主题色-起);
+              "
+            >
+              <div class="提示-标题" style="color: #a5b4fc; margin-bottom: 2px">
+                💡 必须先手动点击播放一次
+              </div>
+              <p style="font-size: 11.5px; line-height: 1.4">
+                进入视频页面后，<b>您必须先在网页中手动点击播放一次该视频</b>。这是因为浏览器需要通过“播放”动作来识别当前要控制哪一个视频目标。只要视频播放过一次，即便之后再次暂停，设备上的按键控制也将持续有效。
+              </p>
+            </div>
+          </li>
+          <li>
+            <strong>按下实体按键进行测试</strong>：
+            <p style="color: var(--文字次色); margin-top: 4px">
+              现在按下您配置好的 Ulanzi Deck
+              实体按键或旋转旋钮，观察浏览器中的网页视频是否能够完美响应快进、快退及播放/暂停控制！
+            </p>
+          </li>
+        </ol>
+      </div>
+
+      <!-- 排查问题 -->
+      <div class="卡片" style="margin-bottom: 0">
+        <h2>🔍 常见问题与排查</h2>
+
+        <div class="问答-条目">
+          <div class="问答-问题">按下设备按键后，视频没有任何反应？</div>
+          <div class="问答-回答">
+            <ul>
+              <li>
+                <strong>排查一</strong>：请确保已经在配置面板中点击过
+                <b>“安装配置”</b> 并在弹出的命令行中执行成功。
+              </li>
+              <li>
+                <strong>排查二</strong
+                >：请确保已经在网页中<b>手动点击播放过一次该视频</b>。如果从未播放过，浏览器将不知道需要控制哪一个视频目标。只要视频播放过一次，即便在暂停状态下，按键操作也是有效的。
+              </li>
+              <li>
+                <strong>排查三</strong
+                >：点击浏览器右上角插件图标，查看连接指示是否正常。如果显示“未连接”，可尝试点击弹窗中的
+                <b>【点击连接 Ulanzi】</b> 按钮重新连接，或重启浏览器与 Ulanzi
+                Studio 客户端。
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

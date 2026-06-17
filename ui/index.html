@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>网页视频控制属性面板</title>
+    <style>
+      :root {
+        --背景色: #16171d;
+        --文字主色: #f3f4f6;
+        --文字次色: #9ca3af;
+        --主题色-起: #6366f1;
+        --主题色-止: #06b6d4;
+        --绿色-亮: #10b981;
+        --边框色: rgba(255, 255, 255, 0.08);
+        --卡片背景: rgba(255, 255, 255, 0.03);
+        --字体:
+          "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: transparent;
+        color: var(--文字主色);
+        font-family: var(--字体);
+        font-size: 12px;
+        line-height: 1.4;
+        padding: 8px;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      /* 滚动条美化 */
+      body::-webkit-scrollbar {
+        width: 4px;
+      }
+      body::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      body::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 2px;
+      }
+      body::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .面板-主容器 {
+        background: var(--卡片背景);
+        border: 1px solid var(--边框色);
+        border-radius: 8px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .面板-头部 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .面板-标题 {
+        font-size: 13px;
+        font-weight: 600;
+        color: #ffffff;
+        letter-spacing: 0.3px;
+      }
+
+      .面板-提示文本 {
+        font-size: 11px;
+        color: var(--文字次色);
+        background: rgba(255, 255, 255, 0.01);
+        padding: 6px;
+        border-radius: 6px;
+        border-left: 2px solid var(--主题色-起);
+      }
+
+      .按钮-组 {
+        display: flex;
+        gap: 8px;
+      }
+
+      .按钮-操作 {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        background: linear-gradient(
+          135deg,
+          var(--主题色-起) 0%,
+          var(--主题色-止) 100%
+        );
+        color: #ffffff;
+        border: none;
+        padding: 8px 6px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+      }
+
+      .按钮-操作:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.1);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+      }
+
+      .按钮-操作:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 4px rgba(99, 102, 241, 0.2);
+      }
+
+      .按钮-次要 {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--边框色);
+        color: var(--文字主色);
+        box-shadow: none;
+      }
+
+      .按钮-次要:hover {
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+
+      .按钮-安装 {
+        border: 1px solid rgba(16, 185, 129, 0.15);
+        color: #10b981;
+      }
+      .按钮-安装:hover {
+        background: rgba(16, 185, 129, 0.08);
+        border-color: rgba(16, 185, 129, 0.35);
+      }
+      .按钮-卸载 {
+        border: 1px solid rgba(239, 68, 68, 0.15);
+        color: #f87171;
+      }
+      .按钮-卸载:hover {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.35);
+      }
+
+      .引导-容器 {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 4px;
+        background: rgba(255, 255, 255, 0.01);
+        padding: 6px;
+        border-radius: 6px;
+        border-left: 2px solid var(--主题色-起);
+      }
+
+      .引导-步骤 {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        font-size: 11px;
+        line-height: 1.4;
+        color: var(--文字次色);
+      }
+
+      .步骤-序号 {
+        background: rgba(99, 102, 241, 0.15);
+        color: #a5b4fc;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        font-weight: bold;
+        flex-shrink: 0;
+        margin-top: 1px;
+        border: 1px solid rgba(99, 102, 241, 0.25);
+      }
+
+      .步骤-文本 {
+        flex: 1;
+      }
+
+      .步骤-文本 b {
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      .图标 {
+        width: 12px;
+        height: 12px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="面板-主容器">
+      <!-- 顶部连接状态 -->
+      <div class="面板-头部">
+        <div class="面板-标题">网页视频控制</div>
+      </div>
+
+      <!-- 引导式操作步骤 -->
+      <div class="引导-容器">
+        <div class="引导-步骤">
+          <span class="步骤-序号">1</span>
+          <span class="步骤-文本">点击<b>【安装配置】</b>完成组件注册。</span>
+        </div>
+        <div class="引导-步骤">
+          <span class="步骤-序号">2</span>
+          <span class="步骤-文本"
+            >点击<b>【扩展目录】</b>，在浏览器中加载其中的 chrome-plugin
+            文件夹。</span
+          >
+        </div>
+        <div class="引导-步骤">
+          <span class="步骤-序号">3</span>
+          <span class="步骤-文本">点击<b>【使用指南】</b>查看图文教程。</span>
+        </div>
+      </div>
+
+      <!-- 操作按钮组一 (注册相关) -->
+      <div class="按钮-组">
+        <button
+          class="按钮-操作 按钮-次要 按钮-安装"
+          id="安装配置按钮"
+          type="button"
+        >
+          <svg class="图标" viewBox="0 0 24 24">
+            <polyline
+              points="22 11.08 22 12 12 22 2 12 12 2 22 12 22 11.08"
+            ></polyline>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <span>安装配置</span>
+        </button>
+
+        <button
+          class="按钮-操作 按钮-次要 按钮-卸载"
+          id="卸载配置按钮"
+          type="button"
+        >
+          <svg class="图标" viewBox="0 0 24 24">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path
+              d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+            ></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+          <span>卸载配置</span>
+        </button>
+      </div>
+
+      <!-- 操作按钮组二 (目录与指南) -->
+      <div class="按钮-组">
+        <button class="按钮-操作 按钮-次要" id="打开文件夹按钮" type="button">
+          <svg class="图标" viewBox="0 0 24 24">
+            <path
+              d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+            ></path>
+          </svg>
+          <span>扩展目录</span>
+        </button>
+
+        <button class="按钮-操作" id="打开指南按钮" type="button">
+          <svg class="图标" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span>使用指南</span>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const 链接参数 = new URLSearchParams(window.location.search);
+        const 服务端地址 = 链接参数.get("address") || "127.0.0.1";
+        const 服务端端口 = Number(链接参数.get("port") || "3906");
+        const 动作唯一标识 = 链接参数.get("uuid") || "";
+
+        let 通信套接字 = null;
+        let 连接就绪 = false;
+
+        function 初始化套接字连接() {
+          try {
+            通信套接字 = new WebSocket(`ws://${服务端地址}:${服务端端口}`);
+
+            通信套接字.onopen = () => {
+              连接就绪 = true;
+              通信套接字.send(
+                JSON.stringify({
+                  uuid: 动作唯一标识,
+                  cmd: "connected",
+                  code: 0,
+                }),
+              );
+            };
+
+            通信套接字.onclose = () => {
+              连接就绪 = false;
+              setTimeout(初始化套接字连接, 3000);
+            };
+
+            通信套接字.onerror = () => {
+              连接就绪 = false;
+            };
+          } catch (创建错误) {
+            console.error("创建 WebSocket 失败: ", 创建错误);
+          }
+        }
+
+        function 打开说明文档() {
+          const 本地地址 = window.location.href;
+          const 插件根路径 = 本地地址.substring(
+            0,
+            本地地址.lastIndexOf("/ui/"),
+          );
+          const 教程文件 = 插件根路径 + "/docs/user-guide.html";
+
+          if (连接就绪 && 通信套接字) {
+            发送消息到插件("打开说明文档");
+          } else {
+            window.open(教程文件, "_blank");
+          }
+        }
+
+        function 发送消息到插件(动作名称) {
+          if (连接就绪 && 通信套接字) {
+            通信套接字.send(
+              JSON.stringify({
+                cmd: "sendToPlugin",
+                uuid: 动作唯一标识,
+                key: 链接参数.get("key") || "",
+                actionid: 链接参数.get("actionid") || "",
+                payload: {
+                  动作: 动作名称,
+                },
+              }),
+            );
+          } else {
+            alert("通信尚未建立，请稍后重试");
+          }
+        }
+
+        document
+          .getElementById("打开指南按钮")
+          .addEventListener("click", 打开说明文档);
+        document
+          .getElementById("打开文件夹按钮")
+          .addEventListener("click", () => 发送消息到插件("打开文件夹"));
+        document
+          .getElementById("安装配置按钮")
+          .addEventListener("click", () => 发送消息到插件("执行安装"));
+        document
+          .getElementById("卸载配置按钮")
+          .addEventListener("click", () => 发送消息到插件("执行卸载"));
+
+        初始化套接字连接();
+      })();
+    </script>
+  </body>
+</html>

@@ -2,6 +2,7 @@
 import fs from "fs";
 import net from "net";
 import path from "path";
+import { exec } from "child_process";
 import UlanzideckApi from "../libs/node/ulanzideckApi.js";
 import Utils from "../libs/node/utils.js";
 import { 记录调试日志 } from "../libs/node/logger.js";
@@ -104,5 +105,43 @@ const 接口实例 = new UlanzideckApi();
     广播控制指令("playPause");
   } else {
     写入调试日志(`未知的动作名称: ${动作名称}`);
+  }
+});
+
+// 处理属性面板发送的自定义事件
+接口实例.on("sendToPlugin", (事件数据) => {
+  写入调试日志(`接收到属性面板消息: ${JSON.stringify(事件数据)}`);
+  const 载荷 = 事件数据.payload || {};
+  if (载荷.动作 === "打开文件夹") {
+    写入调试日志(`正在打开插件文件夹: ${插件根目录}`);
+    exec(`explorer.exe "${插件根目录.replace(/\//g, "\\")}"`, (执行错误) => {
+      // 忽略 explorer 正常退出但可能报非0退出码的情况
+    });
+  } else if (载荷.动作 === "执行安装") {
+    const 脚本目录 = path.join(插件根目录, "scripts").replace(/\//g, "\\");
+    const 脚本文件 = path.join(脚本目录, "install.cmd");
+    写入调试日志(`正在请求管理员权限执行安装脚本: ${脚本文件}`);
+    exec(`powershell -Command "Start-Process cmd -ArgumentList '/c \\\"${脚本文件}\\\"' -Verb RunAs -WorkingDirectory '${脚本目录}'"`, (执行错误) => {
+      if (执行错误) {
+        写入调试日志(`请求安装脚本管理员权限执行失败: ${执行错误.message}`);
+      }
+    });
+  } else if (载荷.动作 === "执行卸载") {
+    const 脚本目录 = path.join(插件根目录, "scripts").replace(/\//g, "\\");
+    const 脚本文件 = path.join(脚本目录, "uninstall.cmd");
+    写入调试日志(`正在请求管理员权限执行卸载脚本: ${脚本文件}`);
+    exec(`powershell -Command "Start-Process cmd -ArgumentList '/c \\\"${脚本文件}\\\"' -Verb RunAs -WorkingDirectory '${脚本目录}'"`, (执行错误) => {
+      if (执行错误) {
+        写入调试日志(`请求卸载脚本管理员权限执行失败: ${执行错误.message}`);
+      }
+    });
+  } else if (载荷.动作 === "打开说明文档") {
+    const 说明文档 = path.join(插件根目录, "docs", "user-guide.html").replace(/\//g, "\\");
+    写入调试日志(`正在打开本地说明文档: ${说明文档}`);
+    exec(`start "" "${说明文档}"`, (执行错误) => {
+      if (执行错误) {
+        写入调试日志(`打开本地说明文档失败: ${执行错误.message}`);
+      }
+    });
   }
 });
