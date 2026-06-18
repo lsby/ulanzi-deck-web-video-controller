@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Video Control Plugin User Guide</title>
+    <style>
+      :root {
+        --背景色: #0b0f19;
+        --卡片背景: rgba(20, 26, 45, 0.6);
+        --边框色: rgba(99, 102, 241, 0.15);
+        --文字主色: #f3f4f6;
+        --文字次色: #9ca3af;
+        --主题色-起: #6366f1;
+        --主题色-止: #06b6d4;
+        --绿色-亮: #10b981;
+        --橙色-亮: #f59e0b;
+        --字体:
+          "Outfit", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: var(--背景色);
+        background-image:
+          radial-gradient(
+            at 0% 0%,
+            rgba(99, 102, 241, 0.15) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 100% 100%,
+            rgba(6, 182, 212, 0.15) 0px,
+            transparent 50%
+          );
+        background-attachment: fixed;
+        color: var(--文字主色);
+        font-family: var(--字体);
+        line-height: 1.6;
+        padding: 40px 20px;
+      }
+
+      .文档-容器 {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .主题-渐变字 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #a5b4fc 0%, #22d3ee 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+      }
+
+      .副标题 {
+        color: var(--文字次色);
+        font-size: 1.1rem;
+      }
+
+      .卡片 {
+        background: var(--卡片背景);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--边框色);
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 10px;
+      }
+
+      h2 .图标-序号 {
+        background: linear-gradient(
+          135deg,
+          var(--主题色-起) 0%,
+          var(--主题色-止) 100%
+        );
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        font-weight: bold;
+      }
+
+      ul,
+      ol {
+        padding-left: 20px;
+        margin-bottom: 15px;
+      }
+
+      li {
+        margin-bottom: 10px;
+        color: var(--文字主色);
+      }
+
+      li strong {
+        color: #ffffff;
+      }
+
+      .提示-区域 {
+        background: rgba(245, 158, 11, 0.1);
+        border-left: 4px solid var(--橙色-亮);
+        border-radius: 4px;
+        padding: 15px;
+        margin-top: 15px;
+        font-size: 0.95rem;
+      }
+
+      .提示-标题 {
+        color: var(--橙色-亮);
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .代码-行 {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: monospace;
+        color: #22d3ee;
+        font-size: 0.9em;
+      }
+
+      .问答-条目 {
+        margin-bottom: 20px;
+      }
+
+      .问答-问题 {
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .问答-问题::before {
+        content: "Q";
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+
+      .问答-回答 {
+        color: var(--文字次色);
+        padding-left: 28px;
+      }
+
+      .问答-回答 li {
+        color: var(--文字次色);
+      }
+
+      .示意图-容器 {
+        margin-top: 10px;
+        margin-bottom: 15px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--边框色);
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .示意图 {
+        width: 100%;
+        max-width: 650px;
+        height: auto;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .示意图-标题 {
+        font-size: 11px;
+        color: var(--文字次色);
+        margin-top: 6px;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="文档-容器">
+      <header>
+        <div class="主题-渐变字">Web Video Control</div>
+        <div class="副标题">Web Video Control User Guide</div>
+      </header>
+
+      <!-- Motivations & Core Pain Points -->
+      <div class="卡片" style="border-left: 4px solid var(--主题色-起)">
+        <h2
+          style="
+            border: none;
+            padding-bottom: 0;
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+          "
+        >
+          💡 Core Pain Point & Development Motivation
+        </h2>
+        <p style="color: var(--文字主色); font-size: 13px; margin-bottom: 10px">
+          In daily computer usage, we often find ourselves working in one software (like writing code) while watching videos or reading content in the background.
+        </p>
+        <p
+          style="
+            color: var(--文字次色);
+            font-size: 12.5px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+          "
+        >
+          <b>Limitations of Traditional Media Keys</b>: Traditional keyboard media keys only support Previous, Next, and Play/Pause. They cannot control playback progress (fast forward/rewind). If you get distracted and want to rewind a few seconds, you have to interrupt your work, switch window focus to the browser, drag the progress bar manually, and switch back. This heavily breaks your flow and concentration.
+        </p>
+        <p style="color: var(--文字次色); font-size: 12.5px; line-height: 1.5">
+          <b>Feature of This Plugin</b>: Without switching window focus or interrupting your work, you can fine-tune the playback progress (rewind, fast-forward, and play/pause) of background browser videos directly using the physical Ulanzi Deck buttons or dials, helping you stay fully focused.
+        </p>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="卡片">
+        <h2>
+          <span class="图标-序号">1</span> 🚀 Step 1: Configure Browser and Install Script
+        </h2>
+        <p style="margin-bottom: 15px; color: var(--文字次色)">
+          Since this plugin controls video playback inside browser pages, it must be paired with a light extension.
+        </p>
+        <ol>
+          <li>
+            <strong>Run Registry Installation</strong>:
+            <p style="color: var(--文字次色); margin-top: 4px">
+              Click the <b>[Install Config]</b> button in the Ulanzi property inspector panel (or manually go to the <span class="代码-行">scripts</span> folder in the plugin directory and run <span class="代码-行">install.cmd</span> as administrator). This script automatically registers the plugin to the Native Messaging white list, enabling secure communication with the browser extension.
+            </p>
+          </li>
+          <li>
+            <strong>Open Browser Extension Management Page</strong>:
+            <ul>
+              <li>
+                Chrome: visit
+                <span class="代码-行">chrome://extensions/</span>
+              </li>
+              <li>
+                Edge: visit
+                <span class="代码-行">edge://extensions/</span>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Enable Developer Mode</strong>:
+            <p style="color: var(--文字次色); margin-top: 4px">
+              Locate and turn on the <b>"Developer mode"</b> toggle on the extensions page.
+            </p>
+            <div class="示意图-容器">
+              <img class="示意图" src="images/dev_mode_toggle.png" alt="Enable Developer Mode">
+              <div class="示意图-标题">Figure: Turn on "Developer mode" in the management page</div>
+            </div>
+          </li>
+          <li>
+            <strong>Load Unpacked Extension</strong>:
+            <p style="color: var(--文字次色); margin-top: 4px">
+              Click the <b>"Load unpacked"</b> button, and select the <span class="代码-行">chrome-plugin</span> folder located in the root directory of the plugin.
+            </p>
+            <div class="示意图-容器">
+              <img class="示意图" src="images/load_unpacked.png" alt="Load Unpacked Extension">
+              <div class="示意图-标题">Figure: Click "Load unpacked" and select the chrome-plugin folder</div>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="卡片">
+        <h2><span class="图标-序号">2</span> 🔗 Step 2: Verify Connection Status</h2>
+        <ol>
+          <li>
+            <strong>Verify Connection</strong>:
+            <p style="color: var(--文字次色); margin-top: 4px">
+              Click the extension icon in the browser toolbar to check the status:
+            </p>
+            <ul style="margin-top: 6px; margin-bottom: 6px; padding-left: 20px">
+              <li style="color: var(--文字次色)">
+                If it displays <b>"Connected"</b>, the communication link is successfully established.
+              </li>
+              <li style="color: var(--文字次色)">
+                If it displays <b>"Disconnected"</b>, you can click the <b>[Connect Ulanzi]</b> button in the popup window to reconnect.
+              </li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="卡片">
+        <h2><span class="图标-序号">3</span> 🎛️ Step 3: Configure Actions and Start Using</h2>
+        <ol>
+          <li>Open the <strong>Ulanzi Studio</strong> client application.</li>
+          <li>
+            Find the <strong>Media Control (网页控制)</strong> category in the actions list on the right.
+          </li>
+          <li>
+            Drag and drop the actions onto your physical Deck buttons or dials:
+            <ul>
+              <li><strong>Video Rewind</strong>: Press to rewind the video by 5 seconds.</li>
+              <li><strong>Video Fast Forward</strong>: Press to fast-forward the video by 5 seconds.</li>
+              <li>
+                <strong>Play/Pause</strong>: Press to toggle play or pause status.
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Open and Play a Video</strong>:
+            <p style="color: var(--文字次色); margin-top: 4px">
+              Open any video site supporting HTML5 player (e.g. YouTube, Bilibili, etc.).
+            </p>
+            <div
+              class="提示-区域"
+              style="
+                margin-top: 8px;
+                background: rgba(99, 102, 241, 0.1);
+                border-left-color: var(--主题色-起);
+              "
+            >
+              <div class="提示-标题" style="color: #a5b4fc; margin-bottom: 2px">
+                💡 Must manually play once first
+              </div>
+              <p style="font-size: 11.5px; line-height: 1.4">
+                After entering the video page, <b>you must click play on the video page once manually</b>. The browser needs this action to identify the active video target. Once played, even if paused later, control remains active.
+              </p>
+            </div>
+          </li>
+          <li>
+            <strong>Test Physical Buttons</strong>:
+            <p style="color: var(--文字次色); margin-top: 4px">
+              Press the buttons or turn the dials you configured on your Ulanzi Deck, and see if the background web video responds to fast-forward, rewind, and play/pause controls!
+            </p>
+          </li>
+        </ol>
+      </div>
+
+      <!-- FAQ & Troubleshooting -->
+      <div class="卡片" style="margin-bottom: 0">
+        <h2>🔍 FAQ & Troubleshooting</h2>
+
+        <div class="问答-条目">
+          <div class="问答-问题">No response from the video after pressing the button?</div>
+          <div class="问答-回答">
+            <ul>
+              <li>
+                <strong>Check 1</strong>: Ensure you clicked <b>"Install Config"</b> in the panel and the command ran successfully.
+              </li>
+              <li>
+                <strong>Check 2</strong>: Ensure you <b>clicked play once manually</b> on the video page. Otherwise, the browser cannot recognize the active video target. Once initialized, control works even when paused.
+              </li>
+              <li>
+                <strong>Check 3</strong>: Click the extension icon in the toolbar. If it shows "Disconnected", click <b>[Connect Ulanzi]</b> or restart the browser and Ulanzi Studio client.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

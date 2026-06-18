@@ -136,7 +136,9 @@ const 接口实例 = new UlanzideckApi();
       }
     });
   } else if (载荷.动作 === "打开说明文档") {
-    const 说明文档 = path.join(插件根目录, "docs", "user-guide.html").replace(/\//g, "\\");
+    const 传入语言 = 载荷.参数?.语言 || "en";
+    const 文件名 = 传入语言 === "zh_CN" ? "user-guide.html" : "user-guide-en.html";
+    const 说明文档 = path.join(插件根目录, "docs", 文件名).replace(/\//g, "\\");
     写入调试日志(`正在打开本地说明文档: ${说明文档}`);
     exec(`start "" "${说明文档}"`, (执行错误) => {
       if (执行错误) {
