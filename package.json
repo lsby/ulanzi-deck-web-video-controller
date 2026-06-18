@@ -6,7 +6,7 @@
     "simulator": "node plugin/app.js 127.0.0.1 39069 zh_CN"    
   },
   "type": "module",
-  "devDependencies": {
+  "dependencies": {
     "ws": "^8.18.0"
   }
 }

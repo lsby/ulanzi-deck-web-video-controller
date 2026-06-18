@@ -1,0 +1,35 @@
+name: Build and Package Release
+
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Package Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Create ZIP Archive
+        run: |
+          output_filename="com.lsby.web_video_control.ulanziPlugin.zip"
+          zip -r "$output_filename" . -x "*.git*" -x "*.github*" -x "logs/*" -x "chrome-plugin/logs/*"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-release
+          path: com.lsby.web_video_control.ulanziPlugin.zip
