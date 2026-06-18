@@ -1,12 +1,13 @@
 {
+  "version": "1.0.0",
   "scripts": {
-    "debug:app": "node plugin/app.js",
-    "debug:test": "node plugin/test.js",
-
-    "simulator": "node plugin/app.js 127.0.0.1 39069 zh_CN"    
+    "release": "bumpp --all --execute \"node plugin/sync-version.js\""
   },
   "type": "module",
   "dependencies": {
     "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "bumpp": "^9.4.1"
   }
 }

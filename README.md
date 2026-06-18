@@ -33,7 +33,8 @@ com.lsby.webVideoControl.ulanziPlugin/
 │   ├── popup.html/js      # 手动控制连接与断开的精美弹窗界面
 │   └── icon.png           # 扩展全局图标
 ├── plugin/
-│   └── app.js             # Ulanzi 后端主程序，配置并保持 manifest 公钥、启动命名管道并监听物理键
+│   ├── app.js             # Ulanzi 后端主程序，配置并保持 manifest 公钥、启动命名管道并监听物理键
+│   └── sync-version.js    # 版本同步脚本，用于同步 package.json 的版本号至 manifest.json
 ├── scripts/
 │   ├── install.cmd        # 一键安装、动态生成 host-manifest.json 并注册到注册表的脚本（需管理员权限）
 │   └── uninstall.cmd      # 一键卸载、清理注册表残留并删除 host-manifest.json 的脚本（需管理员权限）

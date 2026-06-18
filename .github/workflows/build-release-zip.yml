@@ -2,8 +2,8 @@ name: Build and Package Release
 
 on:
   push:
-    branches:
-      - '**'
+    tags:
+      - "v*"
   workflow_dispatch:
 
 jobs:
@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -19,8 +21,8 @@ jobs:
       - name: Setup Node Environment
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install Dependencies
         run: npm install
@@ -30,15 +32,8 @@ jobs:
           output_filename="com.lsby.web_video_control.ulanziPlugin.zip"
           zip -r "$output_filename" . -x "*.git*" -x "*.github*" -x "logs/*" -x "chrome-plugin/logs/*"
 
-      - name: 获取提交时间戳
-        id: get-commit-time
+      - name: Publish to GitHub Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          提交时间=$(git show -s --format=%cd --date=format:'%Y%m%d-%H%M%S')
-          echo "timestamp=$提交时间" >> $GITHUB_OUTPUT
-
-      - name: 发布到 GitHub Releases
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ steps.get-commit-time.outputs.timestamp }}
-          name: Release v${{ steps.get-commit-time.outputs.timestamp }}
-          files: com.lsby.web_video_control.ulanziPlugin.zip
+          gh release create "${{ github.ref_name }}" com.lsby.web_video_control.ulanziPlugin.zip --title "Release ${{ github.ref_name }}" --generate-notes
