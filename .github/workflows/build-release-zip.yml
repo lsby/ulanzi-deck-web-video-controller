@@ -10,6 +10,8 @@ jobs:
   build:
     name: Package Job
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -28,8 +30,15 @@ jobs:
           output_filename="com.lsby.web_video_control.ulanziPlugin.zip"
           zip -r "$output_filename" . -x "*.git*" -x "*.github*" -x "logs/*" -x "chrome-plugin/logs/*"
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+      - name: 获取提交时间戳
+        id: get-commit-time
+        run: |
+          提交时间=$(git show -s --format=%cd --date=format:'%Y%m%d-%H%M%S')
+          echo "timestamp=$提交时间" >> $GITHUB_OUTPUT
+
+      - name: 发布到 GitHub Releases
+        uses: softprops/action-gh-release@v2
         with:
-          name: plugin-release
-          path: com.lsby.web_video_control.ulanziPlugin.zip
+          tag_name: v${{ steps.get-commit-time.outputs.timestamp }}
+          name: Release v${{ steps.get-commit-time.outputs.timestamp }}
+          files: com.lsby.web_video_control.ulanziPlugin.zip
