@@ -1,5 +1,5 @@
 {
-  "Version": "1.0.4",
+  "Version": "1.0.5",
   "Name": "Media Control",
   "Description": "Control web video playback progress (fast-forward and rewind) without stealing focus",
   "Icon": "assets/icons/icon.png",
