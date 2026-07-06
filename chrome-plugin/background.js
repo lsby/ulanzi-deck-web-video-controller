@@ -2,6 +2,7 @@ let 原生端口 = null;
 let 连接状态 = "disconnected";
 let 连接超时定时器 = null;
 let 错误详情 = "";
+let 允许自动重连 = true;
 
 // 更新连接状态并广播给 popup 页面
 function 更新连接状态(新状态, 错误原因 = "") {
@@ -110,6 +111,7 @@ chrome.runtime.onMessage.addListener((请求, 发送者, 发送响应) => {
   if (请求.action === "getStatus") {
     发送响应({ status: 连接状态, error: 错误详情 });
   } else if (请求.action === "connect") {
+    允许自动重连 = true;
     连接原生宿主();
     // 立刻返回 "connecting" 状态，让 UI 进入“正在连接”等待状态
     发送响应({ status: 连接状态, error: 错误详情 });
@@ -123,10 +125,29 @@ chrome.runtime.onMessage.addListener((请求, 发送者, 发送响应) => {
       } catch (错误) {}
       原生端口 = null;
     }
+    允许自动重连 = false;
     更新连接状态("disconnected");
     发送响应({ status: 连接状态, error: 错误详情 });
   }
 });
 
-// 首次启动时仅尝试连接一次，失败后绝不进行后台定时轮询重连
+function 尝试重连() {
+  if (!允许自动重连) return;
+  if (连接状态 === "connected" || 连接状态 === "connecting") return;
+  
+  console.log("[Background] 浏览器活动触发，尝试连接原生宿主...");
+  连接原生宿主();
+}
+
+// 监听浏览器启动或唤醒
+chrome.runtime.onStartup.addListener(() => {
+  尝试重连();
+});
+
+// 监听新窗口创建（解决 Edge 后台驻留时，打开浏览器不算 Startup 的问题）
+chrome.windows.onCreated.addListener(() => {
+  尝试重连();
+});
+
+// 首次加载脚本时尝试连接
 连接原生宿主();
