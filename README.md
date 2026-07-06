@@ -23,7 +23,7 @@
 ## 🛠️ 项目结构
 
 ```text
-com.lsby.webVideoControl.ulanziPlugin/
+com.lsby.web_video_control.ulanziPlugin/
 ├── assets/icons/          # Ulanzi 实体键与侧边栏所需的精美图标
 ├── chrome-plugin/         # 浏览器扩展目录
 │   ├── manifest.json      # 扩展 Manifest V3 配置文件（已声明公钥以固定 ID）
